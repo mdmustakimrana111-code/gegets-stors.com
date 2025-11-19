@@ -1,0 +1,590 @@
+27<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Geggets Stores — Electronics & Gadgets</title>
+  <meta name="description" content="Geggets Stores - Demo electronics store with cart, checkout, reviews, contact and chat (local demo)." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --brand:#0f62fe;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --bg:#f7fafc;
+      --radius:12px;
+      font-family:'Inter',system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:#0f1724;line-height:1.45}
+    a{color:inherit}
+    .container{max-width:1200px;margin:20px auto;padding:0 18px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600;cursor:pointer}
+    .cta{background:var(--brand);color:white;padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+    .btn-secondary{background:#f3f4f6;border-radius:8px;padding:8px;border:1px solid #e6edf3;cursor:pointer}
+    .hero{display:grid;grid-template-columns:1fr 440px;gap:20px;align-items:center;background:linear-gradient(180deg, rgba(15,98,254,0.04), transparent);padding:20px;border-radius:var(--radius);margin-bottom:16px}
+    .hero h1{font-size:26px;margin:0 0 8px}
+    .hero p{margin:0 0 12px;color:var(--muted)}
+    .search-wrap{position:relative}
+    #main-search{width:100%;padding:12px;border-radius:10px;border:1px solid #e6edf3;font-size:15px}
+    .suggestions{position:absolute;left:0;right:0;background:white;border-radius:8px;box-shadow:0 6px 18px rgba(12,15,20,0.08);margin-top:8px;z-index:40;max-height:220px;overflow:auto;display:none}
+    .suggestion-item{padding:10px;border-bottom:1px solid #f1f5f9;cursor:pointer}
+    .suggestion-item:last-child{border-bottom:none}
+    .card-hero img{width:100%;border-radius:10px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:12px}
+    .product{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(12,15,20,0.03);display:flex;flex-direction:column;min-height:320px}
+    .product img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+    .product h3{margin:10px 0 6px;font-size:16px}
+    .price-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+    .price{font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+    .btn-add{background:transparent;border:1px solid var(--brand);color:var(--brand);padding:8px 10px;border-radius:8px;cursor:pointer}
+    footer{margin-top:28px;text-align:center;color:var(--muted);font-size:14px;padding:18px 0}
+    .cart-btn{position:fixed;right:20px;bottom:20px;background:var(--brand);color:white;border:none;padding:14px;border-radius:999px;box-shadow:0 8px 20px rgba(15,98,254,0.2);cursor:pointer;z-index:110}
+    .drawer{position:fixed;right:0;top:0;height:100vh;width:420px;background:white;box-shadow:-20px 0 40px rgba(2,6,23,0.08);transform:translateX(110%);transition:transform .28s ease;padding:18px;display:flex;flex-direction:column;z-index:120}
+    .drawer.open{transform:translateX(0)}
+    .cart-items{flex:1;overflow:auto;padding-right:6px}
+    .cart-item{display:flex;gap:12px;align-items:center;margin-bottom:12px;justify-content:space-between}
+    .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px}
+    .checkout{background:var(--brand);color:white;padding:12px;border-radius:10px;border:none;width:100%;font-weight:700;margin-top:10px}
+    .total{font-weight:700;margin-top:10px;text-align:right}
+    .order-form{display:none;flex-direction:column;gap:10px;margin-top:12px}
+    .order-form input,.order-form select{padding:10px;border:1px solid #ddd;border-radius:8px;width:100%}
+    .order-form button{background:var(--brand);color:white;border:none;padding:10px;border-radius:8px;font-weight:600}
+    .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:140}
+    .overlay.open{display:flex}
+    .modal{background:white;padding:16px;border-radius:12px;max-width:520px;width:100%;box-shadow:0 12px 40px rgba(2,6,23,0.2)}
+    .reviews-list{margin-top:8px;max-height:160px;overflow:auto;padding-right:6px}
+    .review-item{border-top:1px solid #f1f5f9;padding:8px 0}
+    .contact{background:var(--card);padding:16px;border-radius:12px;margin-top:18px;box-shadow:0 6px 18px rgba(12,15,20,0.03)}
+    .about{background:var(--card);padding:16px;border-radius:12px;margin-top:18px;box-shadow:0 6px 18px rgba(12,15,20,0.03)}
+    .chat-toggle{position:fixed;right:20px;bottom:90px;background:#10b981;color:white;padding:10px;border-radius:999px;border:none;cursor:pointer;z-index:130}
+    .chat-box{position:fixed;right:20px;bottom:140px;width:320px;max-height:480px;background:white;border-radius:12px;box-shadow:0 12px 40px rgba(2,6,23,0.2);display:flex;flex-direction:column;overflow:hidden;z-index:130;transform:translateY(20px);transition:transform .18s ease;display:none}
+    .chat-box.open{display:flex;transform:translateY(0)}
+    .chat-header{background:linear-gradient(90deg,var(--brand),#7c3aed);color:white;padding:10px;display:flex;align-items:center;justify-content:space-between}
+    .chat-messages{padding:12px;flex:1;overflow:auto;background:#fbfdff}
+    .chat-input{display:flex;padding:10px;gap:8px;border-top:1px solid #f1f5f9}
+    .chat-input input{flex:1;padding:8px;border-radius:8px;border:1px solid #e6edf3}
+    .tag{display:inline-block;padding:6px 8px;border-radius:999px;background:#eef2ff;color:var(--brand);font-size:12px;margin-right:6px}
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr}
+      .drawer{width:100%}
+      .chat-box{right:12px;left:12px;width:auto}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">GS</div>
+        <div>
+          <div style="font-weight:700">Geggets Stores</div>
+          <div style="font-size:12px;color:var(--muted)">Electronics & Gadgets</div>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <a onclick="scrollToSection('top')">Home</a>
+        <a onclick="scrollToSection('products')">Products</a>
+        <a onclick="scrollToSection('about')">About</a>
+        <a onclick="scrollToSection('contact')">Contact</a>
+        <a onclick="openCart()">Cart (<span id="cart-count">0</span>)</a>
+      </nav>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn-secondary" onclick="openOrderHistory()">Order History</button>
+        <button class="cta" onclick="openCart()">View Cart</button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-heading">
+        <div>
+          <h1 id="hero-heading">Geggets Stores — আধুনিক ইলেকট্রনিক গ্যাজেট</h1>
+          <p>খুঁজে নাও সর্বশেষ গ্যাজেটগুলো — স্মার্টওয়াচ, ইয়ারবাড, RGB লাইট, পোর্টেবল স্পিকার এবং আরও অনেক কিছু।</p>
+          <div class="search-wrap" role="search" style="max-width:680px">
+            <input id="main-search" type="search" placeholder="Search products, e.g. smartwatch, rgb light..." autocomplete="off" />
+            <div class="suggestions" id="search-suggestions"></div>
+          </div>
+          <div style="margin-top:10px">
+            <span class="tag">Wearables</span>
+            <span class="tag">Lighting</span>
+            <span class="tag">Audio</span>
+            <span class="tag">Smart Home</span>
+            <span class="tag">Accessories</span>
+          </div>
+        </div>
+        <div class="card-hero">
+          <img src="https://images.unsplash.com/photo-1606813902787-66f8c3d8d1de?auto=format&fit=crop&w=900&q=80" alt="Hero Gadget">
+        </div>
+      </section>
+
+      <h2 id="products" style="margin-top:18px">Products</h2>
+      <p class="small" style="margin-top:6px">নীচে জনপ্রিয় ২৫টি গ্যাজেট দেখানো হলো — সার্চ বারের মাধ্যমে দ্রুত খুঁজে নাও (সাজেশনও দেখাবে)।</p>
+      <div class="grid" id="product-grid"></div>
+
+      <div class="about" id="about">
+        <h3>About Geggets Stores</h3>
+        <p>Geggets Stores — বাংলাদেশের একটি ডেমো ইলেকট্রনিক স্টোর। আমাদের লক্ষ্য মানসম্মত, কস্ট-এফেকটিভ গ্যাজেট সরবরাহ করা। এখানে আপনি Wearables, Lighting, Smart Home, Audio Devices ও Accessories—সব ধরনের স্মার্ট গ্যাজেট পাবেন।</p>
+        <p><strong>Location:</strong> ঢাকা, মিরপুর, শাপলা প্লাজা, তৃতীয় তলা, ঢাকা</p>
+        <p><strong>Categories:</strong> Wearables, Lighting, Audio, Smart Home, Accessories, Gaming</p>
+        <p style="margin-top:10px"><strong>Open Chat:</strong> নিচের চ্যাট বক্সে সরাসরি আমাদের সাথে কথা বলতে পারো। কোনো সমস্যা বা অর্ডার সংক্রান্ত প্রশ্ন থাকলে এখানে মেসেজ করো — আমরা সাড়া দেব (ডেমো)।</p>
+      </div>
+
+      <div class="contact" id="contact">
+        <h3>Contact</h3>
+        <p class="small">Email: <a href="mailto:mdmustakimrana111@gmail.com">mdmustakimrana111@gmail.com</a></p>
+        <p class="small">Mobile: <a href="tel:+8801301439856">+8801301439856</a> (01301439856)</p>
+        <p class="small">Address: ঢাকা, মিরপুর, শাপলা প্লাজা, তৃতীয় তলা, ঢাকা</p>
+
+        <h4 style="margin-top:12px">Customer Service</h4>
+        <form id="customer-service-form" onsubmit="submitCustomerService(event)" style="display:flex;flex-direction:column;gap:8px;max-width:520px">
+          <input type="text" id="cs-name" placeholder="Your Name" required>
+          <input type="email" id="cs-email" placeholder="Your Email" required>
+          <input type="text" id="cs-phone" placeholder="Phone Number">
+          <textarea id="cs-message" placeholder="Your message..." rows="4" style="padding:8px;border:1px solid #ddd;border-radius:8px" required></textarea>
+          <button type="submit" class="cta">Send Message</button>
+          <div id="cs-feedback" class="small" style="color:green"></div>
+        </form>
+      </div>
+
+      <footer>© <span id="year"></span> Geggets Stores — All rights reserved.</footer>
+    </main>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div class="drawer" id="cart">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <h2>Your Cart</h2>
+      <div>
+        <button class="btn-secondary" onclick="closeCart()">Close</button>
+      </div>
+    </div>
+
+    <div class="cart-items" id="cart-items"></div>
+
+    <div class="total" id="cart-total">Total: $0.00</div>
+
+    <button class="checkout" onclick="showOrderForm()">Checkout</button>
+
+    <form class="order-form" id="order-form" onsubmit="submitOrder(event)">
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="text" id="phone" placeholder="Phone Number" required>
+      <input type="email" id="email" placeholder="Email Address" required>
+      <input type="text" id="address" placeholder="Delivery Address" required>
+      <select id="payment" required>
+        <option value="">Select Payment Method</option>
+        <option>Cash on Delivery</option>
+        <option>Credit/Debit Card</option>
+        <option>Mobile Banking</option>
+      </select>
+      <button type="submit">Place Order ✅</button>
+    </form>
+
+    <div id="order-history" style="display:none;margin-top:12px">
+      <h3>Order History</h3>
+      <div id="orders-list" style="max-height:260px;overflow:auto;padding-right:6px"></div>
+      <button class="btn-secondary" onclick="clearOrders()">Clear Orders</button>
+    </div>
+  </div>
+
+  <button class="cart-btn" onclick="openCart()">🛒</button>
+
+  <!-- Review Modal -->
+  <div class="overlay" id="overlay">
+    <div class="modal" role="dialog" aria-modal="true" id="review-modal">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 id="review-title">Write a Review</h3>
+        <button class="btn-secondary" onclick="closeReview()">✖</button>
+      </div>
+      <div style="margin-top:8px">
+        <div id="modal-product-name" style="font-weight:700"></div>
+        <div style="margin-top:8px">
+          <label class="small">Rating</label>
+          <select id="review-rating" required>
+            <option value="">Select rating</option>
+            <option value="5">5 — Excellent</option>
+            <option value="4">4 — Very Good</option>
+            <option value="3">3 — Good</option>
+            <option value="2">2 — Fair</option>
+            <option value="1">1 — Poor</option>
+          </select>
+        </div>
+        <div style="margin-top:8px">
+          <label class="small">Comment</label>
+          <textarea id="review-comment" rows="4" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px"></textarea>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="cta" onclick="postReview()">Post Review</button>
+          <button class="btn-secondary" onclick="showReviewsInModal()">Show Reviews</button>
+        </div>
+
+        <div class="reviews-list" id="modal-reviews"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <button class="chat-toggle" onclick="toggleChat()">Chat 💬</button>
+  <div class="chat-box" id="chat-box">
+    <div class="chat-header">
+      <div>Geggets Support</div>
+      <div><button class="btn-secondary" onclick="toggleChat()">Close</button></div>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input">
+      <input id="chat-input" placeholder="Type a message..." />
+      <button class="cta" onclick="sendChat()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Data ----------
+    const PRODUCTS = [
+      { id:'smartwatch', name:'Smart Watch', price:79.99, desc:'Heart rate, sleep tracker, waterproof', img:'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=600&q=80' },
+      { id:'wireless-earbuds', name:'Wireless Earbuds', price:49.99, desc:'True wireless, noise reduction', img:'https://images.unsplash.com/photo-1580894908361-0c6f59d2b5f8?auto=format&fit=crop&w=600&q=80' },
+      { id:'rgb-strip', name:'RGB Light Strip', price:19.99, desc:'16M colors, app control', img:'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=600&q=80' },
+      { id:'mini-speaker', name:'Mini Bluetooth Speaker', price:29.99, desc:'Portable, deep bass', img:'https://images.unsplash.com/photo-1526178610839-6d8d0bba5c05?auto=format&fit=crop&w=600&q=80' },
+      { id:'powerbank', name:'Power Bank 20000mAh', price:25.99, desc:'Fast charging, dual USB', img:'https://images.unsplash.com/photo-1573495612937-8b0a0d5f0a66?auto=format&fit=crop&w=600&q=80' },
+      { id:'fast-charger', name:'Fast Charger', price:14.99, desc:'PD fast charge', img:'https://images.unsplash.com/photo-1555617117-08b6b1b6b7a1?auto=format&fit=crop&w=600&q=80' },
+      { id:'led-desk-lamp', name:'LED Desk Lamp', price:34.99, desc:'Adjustable brightness & color temp', img:'https://images.unsplash.com/photo-1505691723518-36a1d6f7b0c8?auto=format&fit=crop&w=600&q=80' },
+      { id:'smart-glasses', name:'Smart Glasses', price:129.99, desc:'Audio-enabled eyewear', img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80' },
+      { id:'portable-fan', name:'Portable Fan', price:12.99, desc:'USB powered, quiet', img:'https://images.unsplash.com/photo-1596464716121-9c6c9c8d5d4e?auto=format&fit=crop&w=600&q=80' },
+      { id:'smart-plug', name:'Smart Plug', price:15.99, desc:'Voice control, timer', img:'https://images.unsplash.com/photo-1582719478250-3f1a6a0b0b60?auto=format&fit=crop&w=600&q=80' },
+      { id:'gaming-mouse', name:'Gaming Mouse', price:29.99, desc:'RGB, high DPI', img:'https://images.unsplash.com/photo-1570816950670-2f6c7c6b8a0c?auto=format&fit=crop&w=600&q=80' },
+      { id:'wireless-keyboard', name:'Wireless Keyboard', price:49.99, desc:'Slim, long battery life', img:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=600&q=80' },
+      { id:'usb-hub', name:'USB Hub', price:18.99, desc:'Multi-port USB-C hub', img:'https://images.unsplash.com/photo-1555617117-03b72b0b7b91?auto=format&fit=crop&w=600&q=80' },
+      { id:'smart-bulb', name:'Smart Bulb', price:12.99, desc:'WiFi enabled, RGB', img:'https://images.unsplash.com/photo-1508873696983-2dfd5898f2f1?auto=format&fit=crop&w=600&q=80' },
+      { id:'tripod', name:'Tripod Stand', price:22.99, desc:'Adjustable, lightweight', img:'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80' },
+      { id:'ring-light', name:'Selfie Ring Light', price:17.99, desc:'Dimmable, phone holder', img:'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=600&q=80' },
+      { id:'ear-cleaner', name:'Electric Ear Cleaner', price:9.99, desc:'Safe silicone tip', img:'https://images.unsplash.com/photo-1582719478250-4c9c1c6e0b4a?auto=format&fit=crop&w=600&q=80' },
+      { id:'camera', name:'Action Camera', price:89.99, desc:'4K, waterproof', img:'https://images.unsplash.com/photo-1503095396549-1d7f3b9ec6f2?auto=format&fit=crop&w=600&q=80' },
+      { id:'drone', name:'Mini Drone', price:69.99, desc:'Foldable, HD camera', img:'https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?auto=format&fit=crop&w=600&q=80' },
+      { id:'vr-headset', name:'VR Headset', price:59.99, desc:'Immersive mobile VR', img:'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80' },
+      { id:'smart-scale', name:'Smart Scale', price:39.99, desc:'Body composition analyzer', img:'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80' },
+      { id:'usb-light', name:'USB LED Light', price:6.99, desc:'Flexible small lamp', img:'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=600&q=80' },
+      { id:'car-charger', name:'Car Charger', price:11.99, desc:'Dual port fast charging', img:'https://images.unsplash.com/photo-1581090465941-8b3f1d4b6f04?auto=format&fit=crop&w=600&q=80' },
+      { id:'cleaner-robot', name:'Mini Vacuum Cleaner', price:45.99, desc:'Portable dust cleaner', img:'https://images.unsplash.com/photo-1582719478250-9c9a6a2f4b2e?auto=format&fit=crop&w=600&q=80' }
+    ];
+
+    // ---------- State & Keys ----------
+    const cart = [];
+    const LS_ORDERS_KEY = 'geggets_orders_v1';
+    const LS_REVIEWS_KEY = 'geggets_reviews_v1';
+    const LS_CS_KEY = 'geggets_customer_service_v1';
+    const LS_CHAT_KEY = 'geggets_chat_v1';
+
+    // ---------- Init ----------
+    document.getElementById('year').textContent = new Date().getFullYear();
+    renderProductsGrid();
+    bindSearch();
+    loadOrdersCount();
+    renderReviewSummaries();
+
+    // ---------- Helpers ----------
+    function el(tag, props={}, children=''){ const e=document.createElement(tag); for(let k in props) e[k]=props[k]; if(typeof children==='string') e.innerHTML=children; else if(children) e.appendChild(children); return e; }
+    function formatCurrency(v){ return '$' + v.toFixed(2); }
+
+    // ---------- Render Products ----------
+    function renderProductsGrid(){
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML='';
+      PRODUCTS.forEach(p=>{
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <img src="${p.img}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p class="small">${p.desc}</p>
+          <div id="reviews-summary-${p.id}" style="margin-top:6px"></div>
+          <div class="price-row">
+            <div><div class="price">${formatCurrency(p.price)}</div></div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn-add" onclick="addToCart('${p.id}')">Add</button>
+              <button class="btn-secondary" onclick="openReviewModal('${p.id}')">Review</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    // ---------- Search + Suggestions ----------
+    const searchInput = document.getElementById('main-search');
+    const suggestionsBox = document.getElementById('search-suggestions');
+
+    function bindSearch(){
+      searchInput.addEventListener('input', onSearchInput);
+      searchInput.addEventListener('focus', onSearchInput);
+      document.addEventListener('click', (e)=>{
+        if(!e.target.closest('.search-wrap')) suggestionsBox.style.display='none';
+      });
+    }
+
+    function onSearchInput(e){
+      const q = (e.target.value || '').trim().toLowerCase();
+      if(!q){ suggestionsBox.style.display='none'; return; }
+      const matches = PRODUCTS.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)).slice(0,8);
+      if(matches.length===0){ suggestionsBox.innerHTML = '<div class="suggestion-item">No results</div>'; suggestionsBox.style.display='block'; return; }
+      suggestionsBox.innerHTML = matches.map(m=>`<div class="suggestion-item" onclick="onSuggestionClick('${m.id}')">${m.name} — <span class="small" style="color:${'#6b7280'}">${m.desc}</span></div>`).join('');
+      suggestionsBox.style.display='block';
+    }
+
+    function onSuggestionClick(productId){
+      const prod = PRODUCTS.find(p=>p.id===productId);
+      if(!prod) return;
+      searchInput.value = prod.name;
+      suggestionsBox.style.display='none';
+      // scroll to product card
+      const elems = Array.from(document.querySelectorAll('.product'));
+      const idx = PRODUCTS.findIndex(p=>p.id===productId);
+      if(elems[idx]) elems[idx].scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    // ---------- Cart ----------
+    function addToCart(productId){
+      const prod = PRODUCTS.find(x=>x.id===productId);
+      if(!prod) return;
+      cart.push({ id: prod.id, name: prod.name, price: prod.price });
+      document.getElementById('cart-count').textContent = cart.length;
+      renderCart();
+      openCart();
+    }
+
+    function removeFromCart(index){
+      cart.splice(index,1);
+      document.getElementById('cart-count').textContent = cart.length;
+      renderCart();
+    }
+
+    function renderCart(){
+      const itemsDiv = document.getElementById('cart-items');
+      if(cart.length === 0){
+        itemsDiv.innerHTML = '<div class="small">Your cart is empty.</div>';
+        document.getElementById('cart-total').textContent = 'Total: $0.00';
+        return;
+      }
+      let total=0;
+      itemsDiv.innerHTML = cart.map((item,i)=>{
+        total+=item.price;
+        return `
+          <div class="cart-item">
+            <div style="display:flex;gap:10px;align-items:center;">
+              <img src="https://via.placeholder.com/56" alt="${item.name}">
+              <div><div>${item.name}</div><div class="small">${formatCurrency(item.price)}</div></div>
+            </div>
+            <div>
+              <button class="btn-secondary" onclick="removeFromCart(${i})">❌</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('cart-total').textContent = 'Total: ' + formatCurrency(total);
+    }
+
+    function openCart(){
+      document.getElementById('cart').classList.add('open');
+      document.getElementById('order-form').style.display='none';
+      document.getElementById('order-history').style.display='none';
+      renderCart();
+    }
+    function closeCart(){ document.getElementById('cart').classList.remove('open'); }
+
+    function showOrderForm(){
+      document.getElementById('order-history').style.display='none';
+      const f = document.getElementById('order-form');
+      f.style.display = f.style.display==='flex' ? 'none' : 'flex';
+    }
+
+    // ---------- Orders (LocalStorage) ----------
+    function submitOrder(e){
+      e.preventDefault();
+      if(cart.length===0){ alert('কার্ট খালি — অর্ডার করা যাবে না।'); return; }
+      const order = {
+        id: 'ord_'+Date.now(),
+        name: document.getElementById('name').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        payment: document.getElementById('payment').value,
+        items: cart.slice(),
+        total: cart.reduce((s,i)=>s+i.price,0),
+        createdAt: new Date().toISOString()
+      };
+      const orders = JSON.parse(localStorage.getItem(LS_ORDERS_KEY) || '[]');
+      orders.unshift(order);
+      localStorage.setItem(LS_ORDERS_KEY, JSON.stringify(orders));
+      alert('✅ Order placed successfully!');
+      cart.length = 0;
+      document.getElementById('cart-count').textContent = 0;
+      document.getElementById('order-form').reset();
+      document.getElementById('order-form').style.display='none';
+      closeCart();
+      renderCart();
+    }
+
+    function openOrderHistory(){
+      openCart();
+      document.getElementById('order-form').style.display='none';
+      const historyDiv = document.getElementById('order-history');
+      historyDiv.style.display = 'block';
+      const ordersList = document.getElementById('orders-list');
+      const orders = JSON.parse(localStorage.getItem(LS_ORDERS_KEY) || '[]');
+      if(orders.length===0){ ordersList.innerHTML = '<div class="small">No orders yet.</div>'; return; }
+      ordersList.innerHTML = orders.map(o=>{
+        const date = new Date(o.createdAt).toLocaleString();
+        const itemsHtml = o.items.map(it=>`${it.name} (${formatCurrency(it.price)})`).join('<br>');
+        return `<div style="border-bottom:1px solid #f1f5f9;padding:8px 0;margin-bottom:6px">
+          <div style="font-weight:700">${o.name} — <span class="small" style="font-weight:400">${date}</span></div>
+          <div class="small">${itemsHtml}</div>
+          <div style="margin-top:6px;font-weight:700">Total: ${formatCurrency(o.total)}</div>
+          <div class="small" style="color:var(--muted)">Payment: ${o.payment || '-'}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function clearOrders(){
+      if(!confirm('Are you sure you want to clear all saved orders?')) return;
+      localStorage.removeItem(LS_ORDERS_KEY);
+      openOrderHistory();
+    }
+
+    function loadOrdersCount(){ /* placeholder for later if needed */ }
+
+    // ---------- Customer Service (LocalStorage) ----------
+    function submitCustomerService(e){
+      e.preventDefault();
+      const name = document.getElementById('cs-name').value.trim();
+      const email = document.getElementById('cs-email').value.trim();
+      const phone = document.getElementById('cs-phone').value.trim();
+      const message = document.getElementById('cs-message').value.trim();
+      if(!name||!email||!message){ alert('Please fill required fields'); return; }
+      const arr = JSON.parse(localStorage.getItem(LS_CS_KEY) || '[]');
+      arr.unshift({ id:'cs_'+Date.now(), name, email, phone, message, createdAt: new Date().toISOString() });
+      localStorage.setItem(LS_CS_KEY, JSON.stringify(arr));
+      document.getElementById('cs-feedback').textContent = '✅ Your message has been sent!';
+      document.getElementById('customer-service-form').reset();
+      setTimeout(()=>{ document.getElementById('cs-feedback').textContent=''; },4000);
+    }
+
+    // ---------- Reviews ----------
+    function getReviews(){ return JSON.parse(localStorage.getItem(LS_REVIEWS_KEY) || '{}'); }
+    function saveReviews(obj){ localStorage.setItem(LS_REVIEWS_KEY, JSON.stringify(obj)); }
+
+    function openReviewModal(productId){
+      const prod = PRODUCTS.find(p=>p.id===productId);
+      if(!prod) return;
+      document.getElementById('overlay').classList.add('open');
+      document.getElementById('modal-product-name').textContent = prod.name;
+      document.getElementById('review-rating').value='';
+      document.getElementById('review-comment').value='';
+      document.getElementById('review-modal').dataset.productId = productId;
+      showReviewsInModal();
+    }
+    function closeReview(){ document.getElementById('overlay').classList.remove('open'); document.getElementById('modal-reviews').innerHTML=''; }
+    function postReview(){
+      const pid = document.getElementById('review-modal').dataset.productId;
+      const rating = document.getElementById('review-rating').value;
+      const comment = document.getElementById('review-comment').value.trim();
+      if(!pid || !rating){ alert('Please select rating.'); return; }
+      const reviews = getReviews();
+      if(!reviews[pid]) reviews[pid]=[];
+      reviews[pid].unshift({ id:'r_'+Date.now(), rating:Number(rating), comment, createdAt:new Date().toISOString() });
+      saveReviews(reviews);
+      renderReviewSummaries();
+      showReviewsInModal();
+      alert('ধন্যবাদ — তোমার রিভিউ পোস্ট করা হয়েছে!');
+    }
+    function showReviewsInModal(){
+      const pid = document.getElementById('review-modal').dataset.productId;
+      const reviews = getReviews();
+      const list = reviews[pid] || [];
+      const out = list.map(r=>`<div class="review-item"><div style="font-weight:700">${'⭐'.repeat(r.rating)} <span class="small" style="font-weight:400"> - ${new Date(r.createdAt).toLocaleString()}</span></div><div class="small">${escapeHtml(r.comment||'')}</div></div>`).join('');
+      document.getElementById('modal-reviews').innerHTML = out || '<div class="small">No reviews yet for this product.</div>';
+    }
+    function renderReviewSummaries(){
+      PRODUCTS.forEach(p=>{
+        const container = document.getElementById('reviews-summary-'+p.id);
+        const reviews = getReviews();
+        const list = reviews[p.id] || [];
+        if(list.length===0) container.innerHTML = `<div class="small">No reviews yet</div>`;
+        else {
+          const avg = (list.reduce((s,r)=>s+r.rating,0)/list.length).toFixed(1);
+          container.innerHTML = `<div class="small" style="color:var(--muted)">Rating: ${avg} ⭐ — ${list.length} review(s)</div>`;
+        }
+      });
+    }
+
+    function escapeHtml(unsafe=''){
+      return String(unsafe).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+    }
+
+    // ---------- Chat (Demo) ----------
+    function toggleChat(){
+      const box = document.getElementById('chat-box');
+      box.classList.toggle('open');
+      if(box.classList.contains('open')) renderChat();
+    }
+
+    function sendChat(){
+      const txt = document.getElementById('chat-input');
+      const msg = txt.value.trim();
+      if(!msg) return;
+      const arr = JSON.parse(localStorage.getItem(LS_CHAT_KEY) || '[]');
+      arr.push({ id:'c_'+Date.now(), from:'user', text:msg, createdAt:new Date().toISOString() });
+      // demo auto-response
+      arr.push({ id:'c_'+(Date.now()+1), from:'support', text:'ধন্যবাদ আপনার মেসেজ জন্য — আমরা শীঘ্রই সাড়া দেব। (Demo reply)', createdAt:new Date().toISOString() });
+      localStorage.setItem(LS_CHAT_KEY, JSON.stringify(arr));
+      txt.value='';
+      renderChat();
+    }
+
+    function renderChat(){
+      const list = JSON.parse(localStorage.getItem(LS_CHAT_KEY) || '[]');
+      const container = document.getElementById('chat-messages');
+      if(list.length===0) container.innerHTML = '<div class="small" style="color:var(--muted)">No messages yet. Send a message to start.</div>';
+      else container.innerHTML = list.map(m=>{
+        if(m.from==='user') return `<div style="text-align:right;margin-bottom:8px"><div style="display:inline-block;background:#dcfce7;padding:8px;border-radius:8px;max-width:80%">${escapeHtml(m.text)}</div><div class="small" style="color:var(--muted)">${new Date(m.createdAt).toLocaleString()}</div></div>`;
+        return `<div style="text-align:left;margin-bottom:8px"><div style="display:inline-block;background:#eef2ff;padding:8px;border-radius:8px;max-width:80%">${escapeHtml(m.text)}</div><div class="small" style="color:var(--muted)">${new Date(m.createdAt).toLocaleString()}</div></div>`;
+      }).join('');
+      const el = document.getElementById('chat-messages');
+      el.scrollTop = el.scrollHeight;
+    }
+
+    // ---------- Utilities / Navigation ----------
+    function scrollToSection(id){
+      if(id==='top'){ window.scrollTo({top:0, behavior:'smooth'}); return; }
+      const el = document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+      // if products clicked, focus search and show suggestions
+      if(id==='products'){ searchInput.focus(); onSearchInput({target:searchInput}); }
+    }
+
+    // Close overlay on click outside
+    document.getElementById('overlay').addEventListener('click', (e)=>{ if(e.target.id==='overlay') closeReview(); });
+
+    // keyboard esc to close drawer/modal
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeCart(); closeReview(); const cb=document.getElementById('chat-box'); cb.classList.remove('open'); } });
+
+    // Expose a few functions for inline onclicks
+    window.addToCart = (pid)=>addToCart(pid);
+    window.removeFromCart = removeFromCart;
+    window.openCart = openCart;
+    window.openOrderHistory = openOrderHistory;
+    window.openReviewModal = openReviewModal;
+    window.closeReview = closeReview;
+    window.postReview = postReview;
+    window.showReviewsInModal = showReviewsInModal;
+    window.submitOrder = submitOrder;
+    window.clearOrders = clearOrders;
+    window.submitCustomerService = submitCustomerService;
+
+    // initial render of review summaries
+    renderReviewSummaries();
+  </script>
+</body>
+</html>
